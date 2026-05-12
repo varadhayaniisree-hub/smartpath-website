@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Path - Login</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #2d1b2e, #4b2e4f);
+        color: white;
+    }
+
+    /* Navbar */
+    .navbar {
+        background-color: #020b24;
+        padding: 15px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar h1 {
+        margin: 0;
+    }
+
+    .nav-links a {
+        color: #c084fc;
+        margin-left: 20px;
+        text-decoration: none;
+    }
+
+    /* Container */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+    }
+
+    /* Form Box */
+    .form-box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 30px;
+        border-radius: 12px;
+        width: 400px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .form-box h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    input, label {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    input {
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        margin-top: 5px;
+        outline: none;
+    }
+
+    input[type="file"] {
+        background: #fff;
+        color: #000;
+        padding: 5px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 6px;
+        background-color: #7c3aed;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #5b21b6;
+    }
+
+    .note {
+        font-size: 12px;
+        color: #ccc;
+        margin-top: 5px;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h1>Login</h1>
+    <div class="nav-links">
+        <a href="sample.html">Home</a>
+    
+    </div>
+</div>
+
+<!-- Form Section -->
+<div class="container">
+    <div class="form-box">
+        <h2>User Registration</h2>
+
+        <form action="#" method="POST" enctype="multipart/form-data">
+
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Enter your name" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+
+            <label>Mobile Number</label>
+            <input type="tel" name="mobile" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+
+            <label>Vehicle Registration Number (India)</label>
+            <input type="text" name="vehicle"
+                   placeholder="e.g. MH12AB1234"
+                   pattern="^[A-Z]{2}[0-9]{2}[A-Z]{2}[0-9]{4}$"
+                   title="Format: MH12AB1234"
+                   required>
+            <div class="note">Format: MH12AB1234</div>
+
+            <label>Upload Driving License</label>
+            <input type="file" name="license" accept="image/*,application/pdf" required>
+
+            <label>Upload RC Book</label>
+            <input type="file" name="rcbook" accept="image/*,application/pdf" required>
+
+            <button type="submit" class="btn">Register / Login</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

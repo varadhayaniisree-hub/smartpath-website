@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Dashboard - Madurai</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #47285b;
+    color: white;
+}
+
+header {
+    background: #081b2f;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 80px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #5a3a6b;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 260px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+}
+
+.card h2 {
+    margin-bottom: 15px;
+}
+
+.value {
+    font-size: 26px;
+    margin: 15px 0;
+    white-space: pre-line;
+}
+
+button {
+    background: #2ecc71;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #27ae60;
+}
+
+footer {
+    margin-top: 80px;
+    text-align: center;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+}
+</style>
+</head>
+
+<body>
+
+<header>Smart Dashboard - Madurai</header>
+
+<div class="container">
+
+    <!-- AQI -->
+    <div class="card">
+        <h2>Air Quality Index</h2>
+        <div class="value" id="aqiValue">Click Refresh</div>
+        <button onclick="getAQI()">Refresh AQI</button>
+    </div>
+
+    <!-- Accident Alerts -->
+    <div class="card">
+        <h2>Accident-Prone Zones</h2>
+        <div class="value" id="accidentData">Click Check</div>
+        <button onclick="getAccidents()">Check Zones</button>
+    </div>
+
+    <!-- Traffic -->
+    <div class="card">
+        <h2>Live Traffic</h2>
+        <div class="value" id="trafficData">Click Check</div>
+        <button onclick="getTraffic()">Check Traffic</button>
+    </div>
+
+</div>
+
+<footer>© 2026 Smart Vehicle Monitoring System</footer>
+
+<script>
+
+// 🌍 Madurai Coordinates
+const lat = 9.9252;
+const lon = 78.1198;
+
+// ✅ AQI FUNCTION (API + FALLBACK)
+async function getAQI() {
+
+    let apiKey = "PASTE_YOUR_REAL_API_KEY_HERE"; // 🔴 PUT YOUR KEY HERE
+
+    try {
+        let url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
+        let res = await fetch(url);
+
+        // ❌ If API fails → go fallback
+        if (!res.ok) throw new Error("API failed");
+
+        let data = await res.json();
+
+        if (!data.list) throw new Error("Invalid data");
+
+        let aqi = data.list[0].main.aqi;
+
+        const levels = ["Good", "Fair", "Moderate", "Poor", "Very Poor"];
+        const colors = ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"];
+
+        let text = levels[aqi - 1];
+
+        let el = document.getElementById("aqiValue");
+        el.innerText = text;
+        el.style.color = colors[aqi - 1];
+
+    } catch (e) {
+        // 🔥 FALLBACK (works always)
+        const fakeAQI = Math.floor(Math.random() * 5) + 1;
+        const levels = ["Good", "Fair", "Moderate", "Poor", "Very Poor"];
+        const colors = ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"];
+
+        let el = document.getElementById("aqiValue");
+        el.innerText = levels[fakeAQI - 1] + " (Offline)";
+        el.style.color = colors[fakeAQI - 1];
+    }
+}
+
+
+// 🚧 Accident-prone zones
+function getAccidents() {
+    let zones = [
+        "Anna Nagar - High Risk",
+        "KK Nagar Signal - Moderate",
+        "Mattuthavani Bus Stand - High"
+    ];
+
+    document.getElementById("accidentData").innerText = zones.join("\n");
+}
+
+
+// 🚦 Traffic
+function getTraffic() {
+    document.getElementById("trafficData").innerText =
+        "Heavy Traffic near Periyar Bus Stand\nModerate near Goripalayam";
+}
+
+</script>
+
+</body>
+</html>

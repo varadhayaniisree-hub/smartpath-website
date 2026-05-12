@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start Journey - Smart Path</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #4b2c5e, #5c3a6d);
+    color: white;
+}
+
+/* Navbar */
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: #081b29;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #c084fc;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.hero h1 {
+    font-size: 40px;
+}
+
+.hero p {
+    opacity: 0.8;
+}
+
+/* Form Section */
+.form-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.form-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 20px;
+    width: 320px;
+    text-align: center;
+}
+
+input, select {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(to right, #7c3aed, #9333ea);
+    color: white;
+    cursor: pointer;
+}
+
+/* Map */
+#map {
+    height: 350px;
+    margin: 40px;
+    border-radius: 15px;
+}
+
+/* Result Card */
+.result {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+.good { color: #22c55e; }
+.moderate { color: #eab308; }
+.poor { color: #ef4444; }
+
+footer {
+    text-align: center;
+    margin: 20px;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Smart Path</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Location</a>
+        <a href="#">Settings</a>
+        <a href="#">Notification</a>
+        <a href="#">Login</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Start Your Journey</h1>
+    <p>Plan your route smartly with real-time insights.</p>
+</section>
+
+<div class="form-container">
+    <div class="form-card">
+
+        <h3>Select Route</h3>
+
+        <select id="start">
+            <option value="">Start Location</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Madurai">Madurai</option>
+        </select>
+
+        <select id="end">
+            <option value="">Destination</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Madurai">Madurai</option>
+        </select>
+
+        <input type="number" id="aqi" placeholder="Enter AQI (1-5)" min="1" max="5">
+
+        <button onclick="startJourney()">Start Journey</button>
+
+        <div class="result" id="result"></div>
+
+    </div>
+</div>
+
+<div id="map"></div>
+
+<footer>
+    © 2026 Smart Path
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const locations = {
+    Chennai: [13.0827, 80.2707],
+    Coimbatore: [11.0168, 76.9558],
+    Bangalore: [12.9716, 77.5946],
+    Madurai: [9.9252, 78.1198]
+};
+
+let map = L.map('map').setView([13.0827, 80.2707], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+let marker = L.marker([13.0827, 80.2707]).addTo(map);
+
+function startJourney() {
+    let start = document.getElementById("start").value;
+    let end = document.getElementById("end").value;
+    let aqi = parseInt(document.getElementById("aqi").value);
+    let result = document.getElementById("result");
+
+    if (!start || !end) {
+        result.innerText = "Please select start and destination";
+        result.className = "result poor";
+        return;
+    }
+
+    if (isNaN(aqi) || aqi < 1 || aqi > 5) {
+        result.innerText = "Enter AQI between 1 and 5";
+        result.className = "result poor";
+        return;
+    }
+
+    // AQI Status
+    let statusText = "";
+    let statusClass = "";
+
+    if (aqi === 1) {
+        statusText = "Good - Safe Journey";
+        statusClass = "good";
+    } else if (aqi === 2) {
+        statusText = "Average - Acceptable";
+        statusClass = "moderate";
+    } else if (aqi === 3) {
+        statusText = "Moderate - Be cautious";
+        statusClass = "moderate";
+    } else if (aqi === 4) {
+        statusText = "Bad - Avoid if possible";
+        statusClass = "poor";
+    } else {
+        statusText = "Very Bad - Not recommended";
+        statusClass = "poor";
+    }
+
+    result.innerText = `${start} → ${end} | AQI: ${aqi} | ${statusText}`;
+    result.className = "result " + statusClass;
+
+    // Update map
+    map.setView(locations[start], 7);
+    marker.setLatLng(locations[start]).bindPopup(start).openPopup();
+}
+</script>
+
+</body>
+</html>

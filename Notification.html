@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notification - Madurai</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #2d1b3d, #4b2c5e);
+    color: white;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #1a0f2b;
+}
+
+.container {
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #3e225b;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.score {
+    font-size: 40px;
+    font-weight: bold;
+    color: #00ffcc;
+}
+
+.btn {
+    padding: 8px 15px;
+    background: #00c3ff;
+    color: black;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+#map {
+    height: 250px;
+    border-radius: 10px;
+}
+
+.notification-panel {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 300px;
+    background: #2a173c;
+    border-radius: 10px;
+    display: none;
+    padding: 15px;
+}
+
+.notification {
+    padding: 10px;
+    border-bottom: 1px solid #555;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Notifications - Madurai</h1>
+    <div onclick="toggleNotifications()" style="cursor:pointer;">🔔</div>
+</header>
+
+<div class="container">
+<div class="grid">
+
+<div class="card">
+    <h2>Personal Driving Score</h2>
+    <div class="score">85</div>
+    <p>Good driving performance. Keep it up!</p>
+</div>
+
+<div class="card">
+    <h2>Monthly Report</h2>
+    <p>Total Distance: 420 km</p>
+    <p>Fuel Efficiency: 18 km/l</p>
+    <a href="#" class="btn">View Details</a>
+</div>
+
+<div class="card">
+    <h2>Traffic Map - Madurai</h2>
+    <div id="map"></div>
+    <p>Live interactive map (no API key required)</p>
+</div>
+
+</div>
+</div>
+
+<div class="notification-panel" id="panel">
+    <h3>Notifications</h3>
+    <div class="notification">🚗 Driving score improved by 5%</div>
+    <div class="notification">📊 Monthly report available</div>
+    <div class="notification">🚦 Traffic alert near Anna Nagar</div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+function toggleNotifications() {
+    let panel = document.getElementById("panel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// Initialize map
+const map = L.map('map').setView([9.9252, 78.1198], 13);
+
+// FIXED TILE LAYER (no access error)
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// Add marker
+L.marker([9.9252, 78.1198])
+    .addTo(map)
+    .bindPopup("Madurai City Center")
+    .openPopup();
+</script>
+
+</body>
+</html>

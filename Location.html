@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Vehicle Dashboard</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #4b2c5e;
+    color: white;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: #081b29;
+}
+
+.logo { font-size: 24px; }
+
+nav button {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #00c6ff;
+    cursor: pointer;
+}
+
+.container {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 280px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    text-align: center;
+    padding: 25px;
+}
+
+.value {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+input, select {
+    width: 80%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.good { color: #22c55e; }
+.moderate { color: #eab308; }
+.poor { color: #ef4444; }
+
+button.action {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    cursor: pointer;
+}
+
+#map {
+    height: 350px;
+    margin: 20px;
+    border-radius: 15px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1 class="logo">Smart Dashboard</h1>
+    <nav>
+        <button onclick="location.reload()">Refresh</button>
+    </nav>
+</header>
+
+<div class="container">
+
+    <!-- Speed Card -->
+    <div class="card">
+        <h2>Vehicle Speed</h2>
+
+        <select id="locationSpeed">
+            <option value="">Select Area</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Madurai">Madurai</option>
+        </select>
+
+        <input type="number" id="speedInput" placeholder="Enter speed">
+
+        <div class="value" id="speedDisplay">0 km/h</div>
+        <div id="speedLocation">Location: -</div>
+
+        <button class="action" onclick="updateSpeed()">Set Speed</button>
+    </div>
+
+    <!-- AQI Card -->
+    <div class="card">
+        <h2>Air Quality Index</h2>
+
+        <select id="locationAQI">
+            <option value="">Select Area</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Bangalore">Bangalore</option>
+            <option value="Madurai">Madurai</option>
+        </select>
+
+        <!-- restricted input -->
+        <input type="number" id="aqiInput" placeholder="Enter AQI (1-5)" min="1" max="5">
+
+        <div class="value" id="aqiDisplay">--</div>
+        <div id="aqiStatus">Waiting...</div>
+
+        <button class="action" onclick="updateAQI()">Set AQI</button>
+    </div>
+
+</div>
+
+<div id="map"></div>
+
+<footer>
+    © 2026 Smart Vehicle Monitoring System
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Locations
+const locations = {
+    Chennai: [13.0827, 80.2707],
+    Coimbatore: [11.0168, 76.9558],
+    Bangalore: [12.9716, 77.5946],
+    Madurai: [9.9252, 78.1198]
+};
+
+let map = L.map('map').setView([13.0827, 80.2707], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+let marker = L.marker([13.0827, 80.2707]).addTo(map);
+
+function updateMap(city) {
+    if (locations[city]) {
+        map.setView(locations[city], 10);
+        marker.setLatLng(locations[city]);
+        marker.bindPopup(city).openPopup();
+    }
+}
+
+// Speed
+function updateSpeed() {
+    let speed = document.getElementById("speedInput").value;
+    let location = document.getElementById("locationSpeed").value;
+
+    document.getElementById("speedDisplay").innerText = speed + " km/h";
+    document.getElementById("speedLocation").innerText = "Location: " + location;
+
+    updateMap(location);
+}
+
+// AQI (Corrected logic)
+function updateAQI() {
+    let aqi = parseInt(document.getElementById("aqiInput").value);
+    let location = document.getElementById("locationAQI").value;
+    let status = document.getElementById("aqiStatus");
+
+    // Validation
+    if (isNaN(aqi) || aqi < 1 || aqi > 5) {
+        status.innerText = "Enter value between 1 and 5";
+        status.className = "poor";
+        document.getElementById("aqiDisplay").innerText = "--";
+        return;
+    }
+
+    document.getElementById("aqiDisplay").innerText = aqi;
+    status.className = "";
+
+    switch(aqi) {
+        case 1:
+            status.innerText = "Good";
+            status.className = "good";
+            break;
+        case 2:
+            status.innerText = "Average";
+            status.className = "moderate";
+            break;
+        case 3:
+            status.innerText = "Moderate";
+            status.className = "moderate";
+            break;
+        case 4:
+            status.innerText = "Bad";
+            status.className = "poor";
+            break;
+        case 5:
+            status.innerText = "Very Bad";
+            status.className = "poor";
+            break;
+    }
+
+    updateMap(location);
+}
+</script>
+
+</body>
+</html>
